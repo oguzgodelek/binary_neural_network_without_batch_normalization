@@ -13,13 +13,12 @@ def get_images(scale_factor, crop_window=48, crop_number=5):
         crop_number(int): how many cropped samples will be generated from
                           each image
     Returns:
-        image_array_hr: HR images
-        image_array_lr: LR images
+        image_array_hr: HR images Tensor with shape (N, 3, crop_window, crop_window)
+        image_array_lr: LR images Tensor with shape (N, 3, crop_window, crop_window)
     '''
     # Read HR and LR training images from file
     hr_path_train = "../data/DIV2K/DIV2K_train_HR"
     lr_path_train = "../data/DIV2K/DIV2K_train_LR_bicubic/X"+str(scale_factor)
-
 
     dirlist_train_hr = os.listdir(hr_path_train)
     dirlist_train_hr.sort()
@@ -45,8 +44,6 @@ def get_images(scale_factor, crop_window=48, crop_number=5):
     image_array_hr, image_array_lr = random_crops(image_array_hr,
                                                   image_array_lr,
                                                   crop_window, crop_number)
-    plot_crops(image_array_hr[10:17])
-    plot_crops(image_array_lr[10:17])
     return image_array_hr, image_array_lr
 
 
@@ -73,12 +70,14 @@ def random_crops(hr_imgs, lr_imgs, crop_size, crop_number):
             random_h = np.random.randint(0, hr.size(dim=1)-crop_size-1)
             random_w = np.random.randint(0, hr.size(dim=2)-crop_size-1)
             hr_samples.append(hr[:, random_h:random_h+crop_size,
-                                 random_w:random_w+crop_size])
+                                 random_w:random_w+crop_size].unsqueeze(0))
             lr_samples.append(lr[:, random_h:random_h+crop_size,
-                                 random_w:random_w+crop_size])
+                                 random_w:random_w+crop_size].unsqueeze(0))
         hr_imgs.pop(0)
         lr_imgs.pop(0)
-
+    hr_samples = torch.cat(hr_samples, 0)
+    lr_samples = torch.cat(lr_samples, 0)
+    mean_image = torch.mean(lr_samples, )
     return hr_samples, lr_samples
 
 
@@ -86,7 +85,6 @@ def plot_crops(imgs):
     '''  This function is used for plotting 5 crops to test the crops
     Args:
         imgs(list[Tensor]): Image list to be plotted
-
     Returns:
         None
     '''
@@ -98,7 +96,7 @@ def plot_crops(imgs):
     num_cols = len(imgs[0])
     fig, axs = plt.subplots(nrows=num_rows, ncols=num_cols, squeeze=False)
     for row_idx, row in enumerate(imgs):
-        row =  row
+        row = row
         for col_idx, img in enumerate(row):
             ax = axs[row_idx, col_idx]
             ax.imshow(np.asarray(img.permute(1, 2, 0)))

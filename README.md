@@ -1,1 +1,2 @@
-# binary_neural_network_without_batch_normalization
+# It is the implementation of the paper Training Binary Neural Network without Batch Normalization for Image
+Super-Resolution
