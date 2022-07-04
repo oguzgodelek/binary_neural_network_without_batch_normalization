@@ -78,11 +78,11 @@ def random_crops(hr_imgs, lr_imgs, crop_size, crop_number):
     hr_samples = torch.cat(hr_samples, 0)
     lr_samples = torch.cat(lr_samples, 0)
     #mean_image = torch.mean(lr_samples, )
-    hr_samples,lr_samples,total_mean = normalize_images(hr_samples,lr_samples);
+    lr_samples,total_mean = normalize_images(lr_samples);
     return hr_samples, lr_samples
 
 
-def normalize_images(imgs_hr, imgs_lr):
+def normalize_images(imgs_lr):
     #https://kozodoi.me/python/deep%20learning/pytorch/tutorial/2021/03/08/image-mean-std.html
     # placeholders
     psum    = torch.tensor([0.0, 0.0, 0.0])
@@ -107,7 +107,7 @@ def normalize_images(imgs_hr, imgs_lr):
     print('std:  '  + str(total_std))
     total_mean = torch.reshape(total_mean, [3,1,1])
     total_std = torch.reshape(total_std, [3,1,1])
-    return (imgs_hr-total_mean)/total_std, (imgs_lr-total_mean)/total_std, total_mean
+    return (imgs_lr-total_mean)/total_std, total_mean
 
     #transform = T.Compose([
     #    T.ToTensor(),
