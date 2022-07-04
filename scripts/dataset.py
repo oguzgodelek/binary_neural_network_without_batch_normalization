@@ -78,24 +78,23 @@ def random_crops(hr_imgs, lr_imgs, crop_size, crop_number):
     hr_samples = torch.cat(hr_samples, 0)
     lr_samples = torch.cat(lr_samples, 0)
     #mean_image = torch.mean(lr_samples, )
-    lr_images = normalize_images(lr_samples);
-    hr_samples = normalize_images(hr_samples);
+    hr_samples,lr_samples,total_mean = normalize_images(hr_samples,lr_samples);
     return hr_samples, lr_samples
 
 
-def normalize_images(imgs):
+def normalize_images(imgs_hr, imgs_lr):
     #https://kozodoi.me/python/deep%20learning/pytorch/tutorial/2021/03/08/image-mean-std.html
     # placeholders
     psum    = torch.tensor([0.0, 0.0, 0.0])
     psum_sq = torch.tensor([0.0, 0.0, 0.0])
 
     #loop through images
-    for img in imgs:
+    for img in imgs_lr:
         psum    += img.long().sum(axis = [1, 2])
         psum_sq += (img.long() ** 2).sum(axis = [1, 2])
 
     # pixel count
-    count = len(imgs) * imgs[0].size()[1] * imgs[0].size()[2]
+    count = len(imgs_lr) * imgs_lr[0].size()[1] * imgs_lr[0].size()[2]
 
     # mean and std
     total_mean = psum / count
@@ -108,7 +107,19 @@ def normalize_images(imgs):
     print('std:  '  + str(total_std))
     total_mean = torch.reshape(total_mean, [3,1,1])
     total_std = torch.reshape(total_std, [3,1,1])
-    return (imgs-total_mean)/total_std
+    return (imgs_hr-total_mean)/total_std, (imgs_lr-total_mean)/total_std, total_mean
+
+    #transform = T.Compose([
+    #    T.ToTensor(),
+    #    T.Normalize(
+    #        mean=total_mean,
+    #        std=total_std,
+    #    ),
+    #])
+    #imgs_hr = transform(imgs_hr)
+    #imgs_lr = transform(imgs_lr)
+
+    #return imgs_hr, imgs_lr, total_mean
 
 def plot_crops(imgs):
     '''  This function is used for plotting 5 crops to test the crops
