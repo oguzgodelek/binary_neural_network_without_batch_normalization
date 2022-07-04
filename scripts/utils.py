@@ -6,7 +6,7 @@ class BinaryActivation(nn.Module):
     def __init__(self):
         super(BinaryActivation, self).__init__()
 
-    def forward(tensor):
+    def forward(self, tensor):
         return tensor.sign().add(0.5).sign()
 
 
@@ -18,7 +18,7 @@ class BinaryConv2d(nn.Module):
 
     def forward(self, X):
         # Binarization of the weights
-        self.conv.weight.data = self.conv.weight.fp.sign().add(0.5).sign()
+        self.conv.weight.data = self.conv.weight.sign().add(0.5).sign()
         out = self.conv(X)
         return out
 
@@ -27,14 +27,26 @@ class MrbConv2d(nn.Module):
     def __init__(self, in_channels):
         super(MrbConv2d, self).__init__()
 
-        self.conv1 = BinaryConv2d(in_channels, int(in_channels/4),
-                                  kernel_size=(1, 5), dilation=1, padding='same')
-        self.conv2 = BinaryConv2d(in_channels, int(in_channels/4),
-                                  kernel_size=(1, 5), dilation=2, padding='same')
-        self.conv3 = BinaryConv2d(in_channels, int(in_channels/4),
-                                  kernel_size=(5, 1), dilation=1, padding='same')
-        self.conv4 = BinaryConv2d(in_channels, int(in_channels/4),
-                                  kernel_size=(5, 1), dilation=2, padding='same')
+        self.conv1 = BinaryConv2d(in_channels,
+                                  int(in_channels/4),
+                                  kernel_size=(1, 5),
+                                  dilation=1,
+                                  padding='same')
+        self.conv2 = BinaryConv2d(in_channels,
+                                  int(in_channels/4),
+                                  kernel_size=(1, 5),
+                                  dilation=2,
+                                  padding='same')
+        self.conv3 = BinaryConv2d(in_channels,
+                                  int(in_channels/4),
+                                  kernel_size=(5, 1),
+                                  dilation=1,
+                                  padding='same')
+        self.conv4 = BinaryConv2d(in_channels,
+                                  int(in_channels/4),
+                                  kernel_size=(5, 1),
+                                  dilation=2,
+                                  padding='same')
 
     def forward(self, X):
         out1 = self.conv1(X)
@@ -46,6 +58,7 @@ class MrbConv2d(nn.Module):
 
 class ResBlock(nn.Module):
     def __init__(self, in_channels):
+        super(ResBlock, self).__init__()
         self.binarize1 = BinaryActivation()
         self.mrb = MrbConv2d(in_channels)
         self.prelu1 = nn.PReLU()
@@ -63,4 +76,5 @@ class ResBlock(nn.Module):
         out = self.conv(X)
         out = self.prelu2(X)
 
+        out = out + X
         return out

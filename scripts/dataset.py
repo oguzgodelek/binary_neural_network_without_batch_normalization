@@ -41,10 +41,11 @@ def get_images(scale_factor, crop_window=48, crop_number=5):
     image_array_lr = [torch.from_numpy(img).permute(2, 0, 1)
                       for img in image_array_lr]
 
-    image_array_hr, image_array_lr = random_crops(image_array_hr,
-                                                  image_array_lr,
-                                                  crop_window, crop_number)
-    return image_array_hr, image_array_lr
+    image_array_hr, image_array_lr, mean_image = random_crops(image_array_hr,
+                                                              image_array_lr,
+                                                              crop_window,
+                                                              crop_number)
+    return image_array_hr, image_array_lr, mean_image
 
 
 def random_crops(hr_imgs, lr_imgs, crop_size, crop_number):
