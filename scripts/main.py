@@ -11,7 +11,7 @@ def main():
         device = "cuda"
     else:
         device = "cpu"
-    hr_images, lr_images = dataset.get_images(4)
+    hr_images, lr_images, mean_image = dataset.get_images(4)
 
 
 if __name__ == "__main__":
