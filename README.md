@@ -132,7 +132,7 @@ python scripts/main.py
 
 # Contact
 
-- **[Oğuz Gödelek](github.com/oguzgodelek) :** oguz.godelek [at] metu.edu.tr
-- **[Gürcan Kavakçı](github.com/gurcankavakci) :** gurcan.kavakci [at] metu.edu.tr 
+- **[Oğuz Gödelek](https://github.com/oguzgodelek) :** oguz.godelek [at] metu.edu.tr
+- **[Gürcan Kavakçı](https://github.com/gurcankavakci) :** gurcan.kavakci [at] metu.edu.tr 
 
 
