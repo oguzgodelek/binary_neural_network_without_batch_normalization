@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-from utils import *
+from blocks import *
 
-class VDSR(nn.Module):
+class VDSR_new(nn.Module):
     def __init__(self, mean_image):
-        super(VDSR, self).__init__()
+        super(VDSR_new, self).__init__()
         self.conv_first = nn.Conv2d(in_channels=3,
                                     out_channels=16,
                                     kernel_size=(3, 3),
@@ -20,15 +20,8 @@ class VDSR(nn.Module):
     def forward(self, X):
         out = self.conv_first(X)
         out = self.relu1(out)
-        print("First:", out.size())
         for block in self.res_blocks:
             out = block(out)
-        print("Last:", out.size())
         out = self.conv_last(out)
         out = out + X
         return out + self.mean_image
-
-
-def init_weights(module):
-    if(isinstance(module, nn.Conv2d)):
-        nn.init.xavier_uniform(module.weight)

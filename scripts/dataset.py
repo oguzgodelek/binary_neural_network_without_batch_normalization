@@ -104,8 +104,7 @@ def normalize_images(imgs_lr):
     total_std  = torch.sqrt(total_var)
 
     # output
-    print('mean: '  + str(total_mean))
-    print('std:  '  + str(total_std))
+
     total_mean = torch.reshape(total_mean, [3, 1, 1])
     total_std = torch.reshape(total_std, [3, 1, 1])
     return (imgs_lr-total_mean)/total_std, total_mean
