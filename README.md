@@ -79,9 +79,11 @@ In forward phase scaling factors introduced in [3] is used to minimize quantizat
 
 Each input image is cropped with some scale factor but paper unspecified the number of crop size of single image. We adjust it to 5. So each input image produces 5 cropped images.
 
-Epoch number for training is also unspecified. We tried several epoch numbers like 1000 and 10000. We tried to find max epoch number which achieve to minimum loss value.
+Epoch number for training is also unspecified. We tried several epoch numbers like 500, 1000 and 15000. Scale factor 2 and 3 are used with 500 epochs, scale factor 4 is used with 1000 and 15000 epochs. We tried to find max epoch number which achieve to minimum loss value.
 
-Due to our personal computer resource limitations we trained our model with less train dataset. They are first 100 high and 100 low resolution images after sorted.
+It is not mentioned in the paper that how mean and standard deviation are calculated for test data. We calculated new mean and standard deviation from test dataset for test phase.
+
+Due to our personal computer resource limitations we trained our model with less train dataset. They are first 300 high and 300 low resolution images after sorted.
 
 # 3. Experiments and results
 
@@ -89,7 +91,7 @@ Due to our personal computer resource limitations we trained our model with less
 
 @TODO: Describe the setup of the original paper and whether you changed any settings.
 
-We used DIV2K image set to train the model. Downloaded 100 high and 100 low resolution images out of 800 were used. Each input image is croped randomly for 5 times. As a result 500 images are used in training phase. After crop is completed, each image is normalized by subtracting the mean of set and divided by standard deviation of set.
+We used DIV2K image set to train the model. Downloaded 300 high and 300 low resolution images out of 800 were used. Each input image is croped randomly for 5 times. As a result 1500 images are used in training phase. After crop is completed, each image is normalized by subtracting the mean of set and divided by standard deviation of set. CPU was used while  training model. Learning rate has been halved every 500, 1000, 1500, 2000, 5000, 7000, 9000 epochs.
 
 ## 3.2. Running the code
 
@@ -114,6 +116,7 @@ root
 │       │─── dataset.py 
 │       │─── div2k_downloader.sh 
 │       │─── main.py 
+│       │─── main_for_test.py 
 │       │─── networks.py 
 │       │─── utils.py 
 │ 
@@ -138,10 +141,16 @@ After download completed python based libraries should be installed.
 pip3 install -r requirements.txt
 ```
 
-To run model, main.py should be run lastly.
+To run and train model, main.py should be run lastly.
 
 ```
 python scripts/main.py
+```
+
+To test model, main_for_test.py can be run.
+
+```
+python scripts/main_for_test.py
 ```
 ## 3.3. Results
 
@@ -150,6 +159,10 @@ python scripts/main.py
 # 4. Conclusion
 
 @TODO: Discuss the paper in relation to the results in the paper and your results.
+
+Since all parameters  in paper were not clearly specified for model training, we determined these unclear points in our study. Therefore, we could not obtain the exact results in the paper. In the train phase, we obtained psnr values close to the results specified in the paper. Another point to be noted is that since we used our personal computers in the train phase, our resources were not sufficient to train models using the entire dataset. So we trained the model using part of the dataset. Therefore, the success of the model has not been as high as stated in the paper. We had to train 15000 epoch for an average of 15 hours. That's why we didn't get a chance to try any more epochs. Since the number of epochs was not specified in the paper, it could not be tested with more epochs.
+
+Since the weights are binarized, the computational complexity is mostly on the batch normalization side. By removing the batch normalization layer in paper, both better results were obtained and a more suitable model for working on devices with low resources was proposed. Since not all parameters are specified in the paper, it is very difficult to reproduce the same results.
 
 # 5. References
 
