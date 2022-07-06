@@ -43,16 +43,37 @@ Batch normalizations are so important that they are recentering the input. So in
 <center><b>Figure 1.</b> (a) original binary residual block (b) the proposed
 multiple receptive-field binary residual block (MRB)</center>
 
-- **Weight initialization**: simple initialization scheme Xavier uniform distribution is used because it is more stable
+BTM details are as follows:
+- **Weight initialization**: simple initialization scheme Xavier uniform distribution is used because it is more stable.
 
-- **Data initialization**: SR networks inputs are normalized to be stable. In Equation 2, x denotes the input,  ̄x denotes the mean and σ denotes standard deviation for low resolution images set. After high resolution image is predicted by model, mean image is added to predicted image. This makes network more stable.
+- **Data initialization**: SR network's inputs are normalized to be stable. Equation 2 is used for normalization process. In Equation 2, x denotes the input,  ̄x denotes the mean and σ denotes standard deviation for low resolution images set. After high resolution image is predicted by model, mean image is added to predicted image. This makes network more stable.
 
 <center><img src="images/img3.png" alt="" style="height:45%; width:45%;"/></center>
 
 
 - **Activation**: PRelu which is suitable for binary networks is introduced.
 
-## 2.2. Our Interpretation
+### Network Structure
+
+Multiple receptive-field (MRB) shown in Figure 1b is used for ease to information loss. It is adopted that 1 x 5 and 5 x 1 convolution operations are used. MRB is expressed as in Equation 3.
+
+<center><img src="images/img4.png" alt="" style="height:60%; width:60%;"/></center>
+
+## 2.2. Baseline
+
+### 2.2.1 Network Settings
+
+The method in paper uses binary convolution layers except first and last layer. To be consistent with existing works[2] it uses full precision convolution layers in first and last layer.
+
+### 2.2.2 Block Structure
+
+Proposed BTM uses block settings as in Figure 1b.
+
+### 2.2.3 Optimization
+
+In forward phase scaling factors introduced in [3] is used to minimize quantization error. Due to sign function in Figure 2a is not differentiable, higher-order estimators[4][5] are used as activation and weight approximation function.
+
+## 2.3. Our Interpretation
 
 @TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
 
@@ -129,6 +150,14 @@ python scripts/main.py
 @TODO: Provide your references here.
 
 [1] [Jiang, X., Wang, N., Xin, J., Li, K., Yang, X., & Gao, X. (2021). Training Binary Neural Network without Batch Normalization for Image Super-Resolution. Proceedings of the AAAI Conference on Artificial Intelligence, 35(2), 1700-1707](https://ojs.aaai.org/index.php/AAAI/article/view/16263)
+
+[2] Xin, J.; Wang, N.; Jiang, X.; Li, J.; Huang, H.; and Gao, X. 2020c. Binarized Neural Network for Single Image Super Resolution. In ECCV.
+
+[3] Rastegari, M.; Ordonez, V.; Redmon, J.; and Farhadi, A. 2016. Xnor-net: Imagenet classification using binary convolutional neural networks. In ECCV.
+
+[4] Liu, Z.; Wu, B.; Luo, W.; Yang, X.; Liu, W.; and Cheng, K.-T. 2018. Bi-real net: Enhancing the performance of 1- bit cnns with improved representational capability and ad- vanced training algorithm. In ECCV.
+
+[5] Xu, Z.; and Cheung, R. C. 2019. Accurate and Compact Convolutional Neural Networks with Trained Binarization. arXiv preprint arXiv:1909.11366 .
 
 # Contact
 
