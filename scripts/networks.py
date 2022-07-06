@@ -12,9 +12,9 @@ class VDSR_new(nn.Module):
         self.relu1 = nn.ReLU()
         self.res_blocks = [ResBlock(16) for _ in range(9)]
         self.conv_last = nn.Conv2d(in_channels=16,
-                                    out_channels=3,
-                                    kernel_size=(3, 3),
-                                    padding='same')
+                                   out_channels=3,
+                                   kernel_size=(3, 3),
+                                   padding='same')
         self.mean_image = mean_image
 
     def forward(self, X):

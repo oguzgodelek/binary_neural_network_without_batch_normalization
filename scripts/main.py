@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-import numpy as numpy
+from torchmetrics import PeakSignalNoiseRatio
+import numpy as np
 import matplotlib.pyplot as plt
 
 import dataset
@@ -13,12 +14,53 @@ def main():
         device = "cuda"
     else:
         device = "cpu"
-
+    device = 'cpu'
     hr_images, lr_images, mean_image = dataset.get_images(4)
-    model = networks.VDSR_new(mean_image)
+    model = networks.VDSR_new(mean_image.to(device))
     model.apply(utils.init_weights)
-    output_hr = model(lr_images)
+    model.to(device)
+    psnr = PeakSignalNoiseRatio()
+    hr_images = torch.autograd.Variable(hr_images.float())
+    lr_images = torch.autograd.Variable(lr_images.float())
+    train_dataset = torch.utils.data.TensorDataset(lr_images, hr_images)
+    trainloader = torch.utils.data.DataLoader(train_dataset,
+                                            batch_size=16,
+                                            shuffle=True)
 
+    criterion = nn.MSELoss()
+    optimizer = torch.optim.Adam(params=model.parameters(),
+                                 lr=0.0001,
+                                 betas=(0.99, 0.999))
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[500, 1000, 1500, 2000, 5000, 7000, 9000], gamma=0.5)
+    epochs = 15000
+    loss_history = []
+    for epoch in range(1, epochs):
+        #if epoch % 200 == 0:
+        #    optimizer.lr.assign(optimizer.lr/2)
+        temp_loss = []
+        for idx, data in enumerate(trainloader, 0):
+             inputs, labels = data
+             inputs = inputs.to(device)
+             labels = labels.to(device)
+
+             optimizer.zero_grad()
+             outputs = model(inputs)
+             loss = criterion(outputs.to(device), labels)
+             loss.backward()
+             optimizer.step()
+             temp_loss.append(loss.item())
+        loss_history.append(np.sum(temp_loss)/len(temp_loss))
+        scheduler.step()
+        print(f'Epoch {epoch} / {epochs}: \
+               avg. loss of last epoch {loss_history[-1]}')
+    torch.save(model.state_dict(), "model_weights.pt")
+    print("1")
+    output_hr = model(lr_images[:100])
+    print("2")
+    print(psnr(output_hr, hr_images[:100]))
+
+    plt.plot(loss_history)
+    plt.imsave("loss_plot_10000_epoch.png")
 
 
 if __name__ == "__main__":
