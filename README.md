@@ -102,11 +102,14 @@ root
 │ 
 │─── scripts/
 │       │─── data/
-│               │─── DIV2K_train_HR/
-│               │─── DIV2K_train_LR_bicubic/ 
-│                       │─── X2/
-│                       │─── X3/
-│                       │─── X4/
+│               │─── DIV2K/
+│                       │─── DIV2K_train_HR/
+│                       │─── DIV2K_train_LR_bicubic/ 
+│                               │─── X2/
+│                               │─── X3/
+│                               │─── X4/
+│               │─── test/
+│                       │─── benchmark/
 │       │─── blocks.py 
 │       │─── dataset.py 
 │       │─── div2k_downloader.sh 
@@ -120,9 +123,12 @@ root
 ```
 
 images directory contains documentation images. scripts/data folder will be created after dataset download script is run.
-Our directory contains one bash script which name is "div2k_downloader.sh" to download DIV2K dataset and unzip it. Firstly it should be run. 
+Our directory contains bash scripts which name are "div2k_downloader.sh" and "div2k_downloader.sh" to download DIV2K, Set5, Set14, Urban100 and BSD100 datasets and unzip them. Firstly it should be run. 
 ```
 ./scripts/div2k_downloader.sh
+```
+```
+./scripts/test_dataset_downloader.sh
 ```
 This will create data folder under scripts and will download and unzip DIV2K image dataset.
 
