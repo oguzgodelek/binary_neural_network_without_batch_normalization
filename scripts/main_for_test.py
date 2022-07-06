@@ -32,8 +32,7 @@ def main_for_test(datasets, scale_factor=4):
 
 
 if __name__ == "__main__":
-    main()
-    main_for_test('Set5', 2)
-    main_for_test('Set14', 2)
-    main_for_test('B100', 2)
-    main_for_test("Urban100", 2)
+    main_for_test('Set5', 3)
+    main_for_test('Set14', 3)
+    main_for_test('B100', 3)
+    main_for_test("Urban100", 3)
