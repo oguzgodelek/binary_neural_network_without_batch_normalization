@@ -9,13 +9,14 @@ import networks
 import utils
 from torchinfo import summary
 
+
 def main_for_training():
     if torch.cuda.is_available():
         device = "cuda"
     else:
         device = "cpu"
     device = 'cpu'
-    hr_images, lr_images, mean_image = dataset.get_images(2)
+    hr_images, lr_images, mean_image = dataset.get_images(4)
     model = networks.VDSR_new(mean_image.to(device))
     model.apply(utils.init_weights)
     model.to(device)
@@ -32,11 +33,10 @@ def main_for_training():
                                  lr=0.0001,
                                  betas=(0.99, 0.999))
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[500, 1000, 1500, 2000, 5000, 7000, 9000], gamma=0.5)
-    epochs = 500
+    epochs = 1000
     loss_history = []
     for epoch in range(1, epochs):
-        #if epoch % 200 == 0:
-        #    optimizer.lr.assign(optimizer.lr/2)
+
         temp_loss = []
         for idx, data in enumerate(trainloader, 0):
              inputs, labels = data
@@ -53,18 +53,20 @@ def main_for_training():
         scheduler.step()
         print(f'Epoch {epoch} / {epochs}: \
                avg. loss of last epoch {loss_history[-1]}')
-    torch.save(model.state_dict(), "model_weights.pt")
-    print("1")
+    torch.save(model.state_dict(), "model_weights_x4.pt")
+    print("Tests for first 100 cropped images")
     output_hr = model(lr_images[:100])
-    print("2")
+
     print(psnr(output_hr, hr_images[:100]))
 
     plt.plot(loss_history)
-    plt.savefig("loss_plot_500_epoch_x3.png")
+
+    plt.savefig("loss_plot_1000_epoch_x4.png")
 
 
 def main_for_test(datasets, scale_factor=4):
-    PATH = "model_weights_15000.pt"
+    print("Scale factor for tests:", scale_factor)
+    PATH = ("model_weights_x" + str(scale_factor) + ".pt").replace(" ", "")
     if torch.cuda.is_available():
         device = "cuda"
     else:
@@ -84,8 +86,8 @@ def main_for_test(datasets, scale_factor=4):
 
 
 if __name__ == "__main__":
-    main_for_training()
-    # main_for_test('Set5')
-    # main_for_test('Set14')
-    # main_for_test('B100')
-    # main_for_test("Urban100")
+    # main_for_training()
+    main_for_test('Set5', 2)
+    main_for_test('Set14', 2)
+    main_for_test('B100', 2)
+    main_for_test("Urban100", 2)
