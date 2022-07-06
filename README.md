@@ -112,7 +112,9 @@ root
 │       │─── div2k_downloader.sh 
 │       │─── main.py 
 │       │─── main_for_test.py 
-│       │─── model_weights.pt 
+│       │─── model_weights_x2.pt 
+│       │─── model_weights_x3.pt 
+│       │─── model_weights_x4.pt 
 │       │─── networks.py 
 │       │─── utils.py 
 │ 
@@ -152,20 +154,19 @@ python scripts/main_for_test.py
 Trained model weights which was trained with 15000 epochs with scale factor of 4 are saved to model_weights.pt file. It can be load to model and reuse for testing. It can be reload to model and the model can be use for testing.
 ## 3.3. Results
 
-@TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
+Loss values from root mean square error for each model are presented in Figure 3, Figure 4 and Figure 5. 
+
 
 <center><img src="images/img5.jpeg" alt="" style="height:50%; width:50%;"/></center>
-<center><b>Figure 3:</b> Loss graph for training data with scale factor 4 and 1000 epochs.</center>
-
+<center><b>Figure 3:</b> Loss graph for training data with scale factor 4 and for first 1000 epochs.</center>
 
 
 <center><img src="images/img9.jpeg" alt="" style="height:50%; width:50%;"/></center>
 <center><b>Figure 4:</b> Loss graph for training data with scale factor 2 and 500 epochs.</center>
 
+
 <center><img src="images/img12.jpeg" alt="" style="height:50%; width:50%;"/></center>
 <center><b>Figure 5:</b> Loss graph for training data with scale factor 3 and 100 epochs.</center>
-
-
 
 | Scale Factor        | 100   | 500  | 15000 | 
 |---------------------|-------|-------|------|
@@ -174,7 +175,8 @@ Trained model weights which was trained with 15000 epochs with scale factor of 4
 | x4                  |       |       |261.11|
 <center><b>Table 1:</b> MSE loss of train set for epochs</center>
 
-
+\
+In paper, the best psnr value was obtained as 31.06 for scale factor of 4, while in our study, we obtained the best value as 21.47 in Set 5. The values we obtained in this study showed that we reached worse results than the values obtained in the paper.
 
 | Scale Factor        | Set5  | Set14 | B100 | Urban100 |
 |---------------------|-------|-------|-------|---------|
@@ -183,6 +185,8 @@ Trained model weights which was trained with 15000 epochs with scale factor of 4
 | x4                  | 21.47 | 18.18 | 19.54 | 18.08   |
 <center><b>Table 2:</b> Psnr of test set</center>
 
+\
+We actually expected better results in x2, but we got better results in x4. This is because the x4 was trained more time with more epochs.
 
 
 # 4. Conclusion
