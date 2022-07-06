@@ -4,8 +4,6 @@ This readme file is an outcome of the [CENG501 (Spring 2022)](https://ceng.metu.
 
 # 1. Introduction
 
-@TODO: Introduce the paper (inc. where it is published) and describe your goal (reproducibility).
-
 Network architectures used in Super Resolution field use batch normalization processes and computations with floating points. Batch normalization processes are the point of the network that require the most processing power and working with floating points makes networks difficult to work on low hardware capacity devices.
 
 In order to overcome these problems Xinrui Jiang, Nannan Wang, Jingwei Xin, Keyu Li, Xi Yang, Xinbo Gao proposed  a method “Training Binary Neural Network without Batch Normalization for Image Super-Resolution” [1]. This study was published in The Thirty-Fifth AAAI Conference on Artificial Intelligence (AAAI-21) proceeding in 2021.
@@ -13,8 +11,6 @@ In order to overcome these problems Xinrui Jiang, Nannan Wang, Jingwei Xin, Keyu
 Our aim is to reproduce this study which does not have publicly available source code, to compare the results and to provide a code base for people who will reference this work later.
 
 ## 1.1. Paper summary
-
-@TODO: Summarize the paper, the method & its contributions in relation with the existing literature.
 
 Binary neural networks produce successful results in Super Resolution field. However, there are serious differences between binary networks and full precision networks in terms of performance. Especially batch normalization processes need powerful hardware as they contain floating point processes. In this paper, new methods that can run on low hardware are proposed. Proposed layers are replaced with the batch normalization step in the existing methods. In this way, it has shown that better results are obtained in terms of performance of state of art methods.
 
@@ -28,8 +24,6 @@ The super resolution is a method of obtaining a higher resolution version of the
 
 ## 2.1. The original method
 
-@TODO: Explain the original method.
-
 ### Binary Training Mechanism
 In literature binary network in Figure 1a is usually used.  As shown in Equation 1, batch normalization is the last step of method. 
 
@@ -40,7 +34,7 @@ Batch normalizations are so important that they are recentering the input. So in
 
 
 <center><img src="images/img1.png" alt="original and proposed binary residual block" style="height:50%; width:50%;"/></center>
-<center><b>Figure 1.</b> (a) original binary residual block (b) the proposed
+<center><b>Figure 1:</b> (a) original binary residual block (b) the proposed
 multiple receptive-field binary residual block (MRB)</center>
 
 BTM details are as follows:
@@ -73,9 +67,10 @@ Proposed BTM uses block settings as in Figure 1b.
 
 In forward phase scaling factors introduced in [3] is used to minimize quantization error. Due to sign function in Figure 2a is not differentiable, higher-order estimators[4][5] are used as activation and weight approximation function.
 
-## 2.3. Our Interpretation
+<center><img src="images/img6.png" alt="" style="height:50%; width:50%;"/></center>
+<center><b>Figure 2:</b> The derivative of sign function and different ap- proximations for it</center>
 
-@TODO: Explain the parts that were not clearly explained in the original paper and how you interpreted them.
+## 2.3. Our Interpretation
 
 Each input image is cropped with some scale factor but paper unspecified the number of crop size of single image. We adjust it to 5. So each input image produces 5 cropped images.
 
@@ -83,19 +78,19 @@ Epoch number for training is also unspecified. We tried several epoch numbers li
 
 It is not mentioned in the paper that how mean and standard deviation are calculated for test data. We calculated new mean and standard deviation from test dataset for test phase.
 
+Loss function is not specified in the paper for base results. We selected mean square error (MSE) as a loss function.
+
 Due to our personal computer resource limitations we trained our model with less train dataset. They are first 300 high and 300 low resolution images after sorted.
 
 # 3. Experiments and results
 
 ## 3.1. Experimental setup
 
-@TODO: Describe the setup of the original paper and whether you changed any settings.
+We used DIV2K image set to train the model. Downloaded 300 high and 300 low resolution images out of 800 were used. Each input image is croped randomly for 5 times. As a result 1500 images are used in training phase. After crop is completed, each image is normalized by subtracting the mean of set and divided by standard deviation of set. CPU was used while training model. Learning rate has been halved every 500, 1000, 1500, 2000, 5000, 7000, 9000 epochs.
 
-We used DIV2K image set to train the model. Downloaded 300 high and 300 low resolution images out of 800 were used. Each input image is croped randomly for 5 times. As a result 1500 images are used in training phase. After crop is completed, each image is normalized by subtracting the mean of set and divided by standard deviation of set. CPU was used while  training model. Learning rate has been halved every 500, 1000, 1500, 2000, 5000, 7000, 9000 epochs.
+Batch size of the training data is 16 and learning rate is set to 0.0001. As an optimizer Adam with β1 = 0.99 and β2 = 0.999 is used. We selected mean square error (MSE) loss function to compare results.
 
 ## 3.2. Running the code
-
-@TODO: Explain your code & directory structure and how other people can run it.
 
 Our repo contains file as:
 ```
@@ -117,6 +112,7 @@ root
 │       │─── div2k_downloader.sh 
 │       │─── main.py 
 │       │─── main_for_test.py 
+│       │─── model_weights.pt 
 │       │─── networks.py 
 │       │─── utils.py 
 │ 
@@ -152,21 +148,50 @@ To test model, main_for_test.py can be run.
 ```
 python scripts/main_for_test.py
 ```
+
+Trained model weights which was trained with 15000 epochs with scale factor of 4 are saved to model_weights.pt file. It can be load to model and reuse for testing. It can be reload to model and the model can be use for testing.
 ## 3.3. Results
 
 @TODO: Present your results and compare them to the original paper. Please number your figures & tables as if this is a paper.
 
-# 4. Conclusion
+<center><img src="images/img5.jpeg" alt="" style="height:50%; width:50%;"/></center>
+<center><b>Figure 3:</b> Loss graph for training data with scale factor 4 and 1000 epochs.</center>
 
-@TODO: Discuss the paper in relation to the results in the paper and your results.
+
+
+<center><img src="images/img9.jpeg" alt="" style="height:50%; width:50%;"/></center>
+<center><b>Figure 4:</b> Loss graph for training data with scale factor 2 and 500 epochs.</center>
+
+<center><img src="images/img12.jpeg" alt="" style="height:50%; width:50%;"/></center>
+<center><b>Figure 5:</b> Loss graph for training data with scale factor 3 and 100 epochs.</center>
+
+
+
+| Scale Factor        | 100   | 500  | 15000 | 
+|---------------------|-------|-------|------|
+| x2                  | 311.76| 281.31|      | 
+| x3                  | 307.06|       |      | 
+| x4                  |       |       |261.11|
+<center><b>Table 1:</b> MSE loss of train set for epochs</center>
+
+
+
+| Scale Factor        | Set5  | Set14 | B100 | Urban100 |
+|---------------------|-------|-------|-------|---------|
+| x2                  | 17.93 | 19.19 | 18.12 | 19.01   |
+| x3                  | 18.19 | 16.62 | 16.72 | 17.69   |
+| x4                  | 21.47 | 18.18 | 19.54 | 18.08   |
+<center><b>Table 2:</b> Psnr of test set</center>
+
+
+
+# 4. Conclusion
 
 Since all parameters  in paper were not clearly specified for model training, we determined these unclear points in our study. Therefore, we could not obtain the exact results in the paper. In the train phase, we obtained psnr values close to the results specified in the paper. Another point to be noted is that since we used our personal computers in the train phase, our resources were not sufficient to train models using the entire dataset. So we trained the model using part of the dataset. Therefore, the success of the model has not been as high as stated in the paper. We had to train 15000 epoch for an average of 15 hours. That's why we didn't get a chance to try any more epochs. Since the number of epochs was not specified in the paper, it could not be tested with more epochs.
 
 Since the weights are binarized, the computational complexity is mostly on the batch normalization side. By removing the batch normalization layer in paper, both better results were obtained and a more suitable model for working on devices with low resources was proposed. Since not all parameters are specified in the paper, it is very difficult to reproduce the same results.
 
 # 5. References
-
-@TODO: Provide your references here.
 
 [1] [Jiang, X., Wang, N., Xin, J., Li, K., Yang, X., & Gao, X. (2021). Training Binary Neural Network without Batch Normalization for Image Super-Resolution. Proceedings of the AAAI Conference on Artificial Intelligence, 35(2), 1700-1707](https://ojs.aaai.org/index.php/AAAI/article/view/16263)
 
