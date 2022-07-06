@@ -23,14 +23,57 @@ def get_images(scale_factor, crop_window=48, crop_number=5):
     dirlist_train_hr = os.listdir(hr_path_train)
     dirlist_train_hr.sort()
     # Get only first 100 images due to memory contraint
-    dirlist_train_hr = dirlist_train_hr[:100]
+    dirlist_train_hr = dirlist_train_hr[:300]
     image_array_hr = [cv.imread(hr_path_train+"/"+image_path)
                       for image_path in dirlist_train_hr]
     image_array_hr = [torch.from_numpy(img).permute(2, 0, 1)
                       for img in image_array_hr]
     dirlist_train_lr = os.listdir(lr_path_train)
     dirlist_train_lr.sort()
-    dirlist_train_hr = dirlist_train_lr[:100]
+    dirlist_train_hr = dirlist_train_lr[:300]
+    image_array_lr = [cv.imread(lr_path_train+"/"+image_path)
+                      for image_path in dirlist_train_lr]
+    for idx, image in enumerate(image_array_lr):
+        image_array_lr[idx] = cv.resize(src=image,
+                                        dsize=(image.shape[1]*scale_factor,
+                                               image.shape[0]*scale_factor),
+                                        interpolation=cv.INTER_CUBIC)
+    image_array_lr = [torch.from_numpy(img).permute(2, 0, 1)
+                      for img in image_array_lr]
+
+    image_array_hr, image_array_lr, mean_image = random_crops(image_array_hr,
+                                                              image_array_lr,
+                                                              crop_window,
+                                                              crop_number)
+    return image_array_hr, image_array_lr, mean_image
+
+
+def get_test_images(scale_factor, dataset='Set14', crop_window=48, crop_number=5):
+    ''' Prepare and return test image list
+    Args:
+        scale_factor(int): scale factor of interpolation
+        crop_window(int): window size of random crops
+        crop_number(int): how many cropped samples will be generated from
+                          each image
+    Returns:
+        image_array_hr: HR images Tensor with shape (N, 3, crop_window, crop_window)
+        image_array_lr: LR images Tensor with shape (N, 3, crop_window, crop_window)
+    '''
+    # Read HR and LR training images from file
+    hr_path_train = "data/test/benchmark/" + dataset + "/HR".replace(' ', '')
+    lr_path_train = "data/test/benchmark/" + dataset + " /LR_bicubic/X"+str(scale_factor)
+    lr_path_train = lr_path_train.replace(" ", '')
+    dirlist_train_hr = os.listdir(hr_path_train)
+    dirlist_train_hr.sort()
+    # Get only first 100 images due to memory contraint
+
+    image_array_hr = [cv.imread(hr_path_train+"/"+image_path)
+                      for image_path in dirlist_train_hr]
+    image_array_hr = [torch.from_numpy(img).permute(2, 0, 1)
+                      for img in image_array_hr]
+    dirlist_train_lr = os.listdir(lr_path_train)
+    dirlist_train_lr.sort()
+
     image_array_lr = [cv.imread(lr_path_train+"/"+image_path)
                       for image_path in dirlist_train_lr]
     for idx, image in enumerate(image_array_lr):
